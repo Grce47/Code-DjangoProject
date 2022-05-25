@@ -19,36 +19,40 @@ def home(request,index=1):
 
 @login_required
 def runcode(request,index=1):
-    
+    output = ""
     if request.method == "POST":
         codeareadata = request.POST['codearea']
-        with open('user_code.py','w') as f:
-            f.writelines(codeareadata)
         try:
             #save original standart output reference
 
             original_stdout = sys.stdout
-            sys.stdout = open('file.txt', 'w') #change the standard output to the file we created
+            sys.stdout = output #change the standard output to the file we created
 
             #execute code
 
-            exec(open('user_code.py').read())
+            exec(codeareadata)
             sys.stdout.close()
 
             sys.stdout = original_stdout  #reset the standard output to its original value
 
             # finally read output from file and save in output variable
 
-            output = open('file.txt', 'r').read()
             
         except Exception as e:
             # to return error in the code
             e_type,e_val,e_tb = sys.exc_info()
             sys.stdout = original_stdout
-            with open('file.txt','a') as fh:
-                traceback.print_exception(e_type,e_val,e_tb,file=fh)
-            output = open('file.txt', 'r').read()
-    
+            output = traceback.format_exc()
+            
+            x1 = output.find("File")
+            x2 = output.find("File",x1+1,len(output)-1)
+
+            tmp = ""
+            for idx,ele in enumerate(output):
+                if idx >= x2 or idx < x1:
+                    tmp += ele
+            
+            output = tmp
 
     context = {
         'main_video' : Video.objects.all()[index-1],
@@ -59,7 +63,8 @@ def runcode(request,index=1):
         'output' : output
     }
     if(not codeareadata.isspace() and len(codeareadata)):
-        print(len(codeareadata))
         my_code = pythonCode.create(request.user,codeareadata,output,request.session.session_key)
         my_code.save()
+    
+    output = ""
     return render(request,'Course/home.html',context=context)
