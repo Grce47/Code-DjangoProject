@@ -28,5 +28,6 @@ urlpatterns = [
     path('logout/',auth_views.LogoutView.as_view(template_name='User/logout.html'),name='User-logout'), #log out page
     path('list_codes/',User_views.listcodes,name='User-listcodes'),
     path('detail_code/',User_views.detailcodes,name='User-detailcode'),
+    path('download/',User_views.download_data,name='User-download'),
     path('detail_code/<int:index>',User_views.detailcodes,name='User-detailcode'),
 ]

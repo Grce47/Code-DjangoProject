@@ -4,6 +4,7 @@ from django.contrib import messages
 from .forms import UserSignUpForm
 from django.contrib.auth.decorators import login_required
 from .models import pythonCode
+from django.contrib.auth.models import User
 
 def signup(request):
     if request.method == 'POST':
@@ -38,3 +39,11 @@ def detailcodes(request,index=1):
         'code'  : code
     }
     return render(request,'User/detail_code.html',context)
+
+@login_required
+def download_data(request):
+    context = {
+        'title' : "Download",
+        'users' : User.objects.all()
+    }
+    return render(request,'User/download_data.html',context)
