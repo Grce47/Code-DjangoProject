@@ -8,12 +8,12 @@ class pythonCode(models.Model):
     codearea = models.TextField()
     output = models.TextField()
     session_key = models.TextField(null=True)
+    username = models.TextField(null=True)
     added = models.DateTimeField(auto_now_add=True)
 
     @classmethod
-    def create(cls, cur_user,cur_code,cur_output,cur_sessionkey):
-        new_code = cls(user=cur_user,codearea=cur_code,output=cur_output,session_key=cur_sessionkey)
-        # do something with the book
+    def create(cls, cur_user,cur_code,cur_output,cur_sessionkey,cur_username):
+        new_code = cls(user=cur_user,codearea=cur_code,output=cur_output,session_key=cur_sessionkey,username=cur_username)
         return new_code
     
     def __str__(self):

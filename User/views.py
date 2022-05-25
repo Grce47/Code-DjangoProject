@@ -4,7 +4,7 @@ from django.contrib import messages
 from .forms import UserSignUpForm
 from django.contrib.auth.decorators import login_required
 from .models import pythonCode
-from django.contrib.auth.models import User
+import csv
 
 def signup(request):
     if request.method == 'POST':
@@ -42,8 +42,21 @@ def detailcodes(request,index=1):
 
 @login_required
 def download_data(request):
-    context = {
-        'title' : "Download",
-        'users' : User.objects.all()
-    }
-    return render(request,'User/download_data.html',context)
+    if request.user.is_staff:
+        response = HttpResponse(content_type='text/csv')
+
+        writer = csv.writer(response)
+        writer.writerow(['Username','Session Key', 'Code', 'Output'])
+
+        for code in pythonCode.objects.all().values_list('username','session_key','codearea','output'):
+            writer.writerow(code)
+        
+        response['Content-Disposition'] = 'attachment; filename="codes.csv"'
+        return response
+    else:
+        context = {
+        'title' : 'Submissions of ' + str(request.user.username),
+        'codes' : pythonCode.objects.filter(user=request.user)
+        }   
+        return render(request,'User/list_codes.html',context=context)
+
