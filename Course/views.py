@@ -1,8 +1,8 @@
 import traceback
+from io import StringIO
 from django.shortcuts import render
 import sys
 from django.contrib.auth.decorators import login_required
-
 from videos.models import Video
 from User.models import pythonCode
 
@@ -19,18 +19,21 @@ def home(request,index=1):
 
 @login_required
 def runcode(request,index=1):
-    output = ""
+    
     if request.method == "POST":
         codeareadata = request.POST['codearea']
         try:
             #save original standart output reference
 
             original_stdout = sys.stdout
-            sys.stdout = output #change the standard output to the file we created
 
+            output_var = StringIO()
+            sys.stdout = output_var #change the standard output to the file we created
+            
             #execute code
-
             exec(codeareadata)
+
+            output = output_var.getvalue()
             sys.stdout.close()
 
             sys.stdout = original_stdout  #reset the standard output to its original value
@@ -40,7 +43,6 @@ def runcode(request,index=1):
             
         except Exception as e:
             # to return error in the code
-            e_type,e_val,e_tb = sys.exc_info()
             sys.stdout = original_stdout
             output = traceback.format_exc()
             
@@ -66,5 +68,4 @@ def runcode(request,index=1):
         my_code = pythonCode.create(request.user,codeareadata,output,request.session.session_key)
         my_code.save()
     
-    output = ""
     return render(request,'Course/home.html',context=context)
