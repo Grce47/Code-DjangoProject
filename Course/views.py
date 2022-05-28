@@ -1,7 +1,5 @@
-import traceback
-from io import StringIO
+import requests
 from django.shortcuts import render
-import sys
 from django.contrib.auth.decorators import login_required
 from videos.models import Video
 from User.models import pythonCode
@@ -19,53 +17,34 @@ def home(request,index=1):
 
 @login_required
 def runcode(request,index=1):
-    
     if request.method == "POST":
         codeareadata = request.POST['codearea']
-        try:
-            #save original standart output reference
 
-            original_stdout = sys.stdout
+        url = 'https://api.jdoodle.com/v1/execute'
+        myobj = {
+            'clientId' : '955c02a67dab8632da1bfda6b53d4fd3',
+            'clientSecret' : '4f50bf0ab404ca19efaae76d33ce378f90f569cf16e72fe26dc54939087b8f1',
+            'script' : codeareadata,
+            'stdin' : '',
+            'language' : 'python3',
+            'versionIndex' : 0
+        }
 
-            output_var = StringIO()
-            sys.stdout = output_var #change the standard output to the file we created
-            
-            #execute code
-            exec(codeareadata)
+        output_json = requests.post(url,json=myobj).json()
+        output = output_json['output']
+        output = output.replace('Jdoodle','Main').replace('jdoodle','main')
 
-            output = output_var.getvalue()
-            sys.stdout.close()
-
-            sys.stdout = original_stdout  #reset the standard output to its original value
-
-            # finally read output from file and save in output variable
-
-            
-        except Exception as e:
-            # to return error in the code
-            sys.stdout = original_stdout
-            output = traceback.format_exc()
-            
-            x1 = output.find("File")
-            x2 = output.find("File",x1+1,len(output)-1)
-
-            tmp = ""
-            for idx,ele in enumerate(output):
-                if idx >= x2 or idx < x1:
-                    tmp += ele
-            
-            output = tmp
-
+    
+    if(not codeareadata.isspace() and len(codeareadata)):
+        my_code = pythonCode.create(request.user,codeareadata,output,request.session.session_key,request.user.username)
+        my_code.save()
     context = {
         'main_video' : Video.objects.all()[index-1],
         'videos' : Video.objects.all(),
         'index' : index,
         'title' : 'Course ' + str(index),
         'code' : codeareadata,
-        'output' : output
+        'output' : output,
+        'my_code' : my_code
     }
-    if(not codeareadata.isspace() and len(codeareadata)):
-        my_code = pythonCode.create(request.user,codeareadata,output,request.session.session_key,request.user.username)
-        my_code.save()
-    
     return render(request,'Course/home.html',context=context)

@@ -6,4 +6,4 @@ class LoggedInUser(models.Model):
     session_key = models.CharField(max_length=32,blank=True,null=True)  #the 1st session (older)
     session_key_2 = models.CharField(max_length=32,blank=True,null=True)    #the 2nd session (newer)
     def __str__(self):
-        self.user.username
+        return self.user.username

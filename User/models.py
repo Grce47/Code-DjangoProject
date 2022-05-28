@@ -10,6 +10,8 @@ class pythonCode(models.Model):
     session_key = models.TextField(null=True)
     username = models.TextField(null=True)
     added = models.DateTimeField(auto_now_add=True)
+    Done = models.BooleanField(default=False)
+    Feedback = models.CharField(null=True,default="",max_length=100)
 
     @classmethod
     def create(cls, cur_user,cur_code,cur_output,cur_sessionkey,cur_username):

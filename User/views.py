@@ -4,6 +4,7 @@ from django.contrib import messages
 from .forms import UserSignUpForm
 from django.contrib.auth.decorators import login_required
 from .models import pythonCode
+from .forms import EditStatusForm
 import csv
 
 def signup(request):
@@ -33,11 +34,22 @@ def listcodes(request):
 @login_required
 def detailcodes(request,index=1):
     code = pythonCode.objects.filter(user=request.user)[index-1]
+    form = EditStatusForm(instance=code)
+    if request.method == 'POST':
+        form = EditStatusForm(request.POST,instance=code)
+        if form.is_valid():
+            form.save()
+            return redirect('/list_codes/')
+    
     
     context = {
         'title' : str(code),
-        'code'  : code
+        'code'  : code,
+        'form' : form
     }
+
+   
+
     return render(request,'User/detail_code.html',context)
 
 @login_required
@@ -46,9 +58,9 @@ def download_data(request):
         response = HttpResponse(content_type='text/csv')
 
         writer = csv.writer(response)
-        writer.writerow(['Username','Session Key', 'Code', 'Output'])
+        writer.writerow(['Username','Session Key', 'Code', 'Output','Date','Done','Feedback'])
 
-        for code in pythonCode.objects.all().values_list('username','session_key','codearea','output'):
+        for code in pythonCode.objects.all().values_list('username','session_key','codearea','output','added','Done','Feedback'):
             writer.writerow(code)
         
         response['Content-Disposition'] = 'attachment; filename="codes.csv"'
