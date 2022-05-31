@@ -4,19 +4,8 @@ from django.contrib.auth.decorators import login_required
 from videos.models import Video
 from User.models import pythonCode
 
-
 @login_required
 def home(request,index=1):
-    context = {
-        'main_video' : Video.objects.all()[index-1],
-        'videos' : Video.objects.all(),
-        'index' : index,
-        'title' : 'Course ' + str(index)
-    }
-    return render(request,'Course/home.html',context=context)
-
-@login_required
-def runcode(request,index=1):
     if request.method == "POST":
         codeareadata = request.POST['codearea']
 
@@ -34,17 +23,30 @@ def runcode(request,index=1):
         output = output_json['output']
         output = output.replace('Jdoodle','Main').replace('jdoodle','main')
 
+        
+        if(not codeareadata.isspace() and len(codeareadata)):
+            my_code = pythonCode.create(request.user,codeareadata,output,request.session.session_key,request.user.username)
+            my_code.save()
+        
+
+        context = {
+            'main_video' : Video.objects.all()[index-1],
+            'videos' : Video.objects.all(),
+            'index' : index,
+            'title' : 'Course ' + str(index),
+            'code' : codeareadata,
+            'output' : output,
+            'my_code' : my_code
+        }
+        return render(request,'Course/home.html',context=context)   
+    else :
+        context = {
+            'main_video' : Video.objects.all()[index-1],
+            'videos' : Video.objects.all(),
+            'index' : index,
+            'title' : 'Course ' + str(index)
+        }
+        return render(request,'Course/home.html',context=context)
+
     
-    if(not codeareadata.isspace() and len(codeareadata)):
-        my_code = pythonCode.create(request.user,codeareadata,output,request.session.session_key,request.user.username)
-        my_code.save()
-    context = {
-        'main_video' : Video.objects.all()[index-1],
-        'videos' : Video.objects.all(),
-        'index' : index,
-        'title' : 'Course ' + str(index),
-        'code' : codeareadata,
-        'output' : output,
-        'my_code' : my_code
-    }
-    return render(request,'Course/home.html',context=context)
+

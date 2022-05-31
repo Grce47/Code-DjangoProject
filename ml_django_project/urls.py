@@ -17,10 +17,9 @@ from django.contrib import admin
 from django.urls import path,include
 from User import views as User_views
 from django.contrib.auth import views as auth_views
-from Course.views import runcode as course_runcode
+
 urlpatterns = [
-    path('runcode',course_runcode,name="runcode"),
-    path('runcode/<int:index>',course_runcode,name="runcode"),    
+
     path('admin/', admin.site.urls),    #admin pages
     path('course/',include('Course.urls')), #course homepage
     path('signup/',User_views.signup,name='User-signup'),   #sign up page
