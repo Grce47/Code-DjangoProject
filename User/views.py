@@ -47,9 +47,6 @@ def detailcodes(request,index=1):
         'code'  : code,
         'form' : form
     }
-
-   
-
     return render(request,'User/detail_code.html',context)
 
 @login_required

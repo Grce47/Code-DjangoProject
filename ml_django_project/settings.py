@@ -139,3 +139,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'Course-home'
 LOGIN_URL = 'User-login'
+
+USE_TZ = True
+TIME_ZONE = "Asia/Kolkata"
