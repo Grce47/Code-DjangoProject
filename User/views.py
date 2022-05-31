@@ -55,10 +55,10 @@ def download_data(request):
         response = HttpResponse(content_type='text/csv')
 
         writer = csv.writer(response)
-        writer.writerow(['Username','Session Key', 'Code', 'Output','Date','Done','Feedback'])
-
-        for code in pythonCode.objects.all().values_list('username','session_key','codearea','output','added','Done','Feedback'):
-            writer.writerow(code)
+        writer.writerow(['Username','Session Key', 'Code', 'Output','Date','Time','Done','Feedback'])
+        for code in pythonCode.objects.all():
+            column = [code.username,code.session_key,code.codearea,code.output,code.added.strftime('%Y-%m-%d') , code.added.strftime('%H:%M'),code.Done,code.Feedback]
+            writer.writerow(column)
         
         response['Content-Disposition'] = 'attachment; filename="codes.csv"'
         return response
