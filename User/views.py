@@ -57,7 +57,7 @@ def download_data(request):
         writer = csv.writer(response)
         writer.writerow(['Username','Session Key', 'Code', 'Output','Date','Time','Done','Feedback'])
         for code in pythonCode.objects.all():
-            column = [code.username,code.session_key,code.codearea,code.output,code.added.strftime('%Y-%m-%d') , code.added.strftime('%H:%M'),code.Done,code.Feedback]
+            column = [code.user.username,code.session_key,code.codearea,code.output,code.added.strftime('%Y-%m-%d') , code.added.strftime('%H:%M'),code.Done,code.Feedback]
             writer.writerow(column)
         
         response['Content-Disposition'] = 'attachment; filename="codes.csv"'

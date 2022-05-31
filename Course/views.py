@@ -33,8 +33,7 @@ def home(request, index=1):
             output = output.replace('Jdoodle', 'Main').replace('jdoodle', 'main')
             
             if(not codeareadata.isspace() and len(codeareadata)):
-                my_code = pythonCode.create(
-                    request.user, codeareadata, output, request.session.session_key, request.user.username)
+                my_code = pythonCode(user=request.user,codearea=codeareadata,output=output,session_key=request.session.session_key)
                 my_code.save()
                 context['form2_val'] = EditStatusForm(instance=my_code)
                 context['form2'] = True
