@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
+
+{% if user.is_authenticated %}
+<div class="container">
+    <legend class="border-bottom mb-4">
+        <h2>Already Logged in!</h2>
+    </legend>
+    <small class="text-muted">
+        <a href="{% url 'Course-home' %}">Course Page</a>
+    </small>
+</div>
+{% else %}
     <div class="content-section container">
         <form method="POST">
             {% csrf_token %}
@@ -15,4 +26,5 @@
             </div>
         </form>
     </div>
+{% endif %}
 {% endblock content %}
