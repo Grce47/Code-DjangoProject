@@ -6,7 +6,7 @@
     <div class="col-md-7 col-sm-6">
         <div class="row">
             <div class="col-md-12 col-sm-12">
-                <form action="" method="post">
+                <form action="" method="post" class="pyhtonide">
                     {% csrf_token %}
                     <div class="form-group-pt-3">
                         <textarea class="form-control" id="codearea" name="codearea" type="text"></textarea>
@@ -16,18 +16,14 @@
                         <textarea type="text" class="form-control" id="output" name="output" rows="10"
                             disabled>{{ output }}</textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Run</button>
+                    <button type="submit" class="btn btn-primary" id="run">Run</button>
+                    {% if form2 %}
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#feedbackModal"
+                        style="float: right;">Feedback Form</button>
+                    {% endif %}
                 </form>
-
-
                 {% if form2 %}
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#feedbackModal">
-                    Feedback Form
-                </button>
-
                 <!-- Modal -->
-
                 <div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog"
                     aria-labelledby="feedbackModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -88,4 +84,45 @@
         </div>
     </div>
 </div>
+<script>
+    document.getElementById("run").disabled = true;
+    const editor = CodeMirror.fromTextArea(
+        document.getElementById("codearea"),
+        {
+            mode: {
+                name: "python",
+                version: 3,
+                singleLineStringErrors: false,
+            },
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true,
+            viewportMargin: Infinity,
+        }
+    );
+    var htmlString = `{{my_code.codearea}}`;
+    function decodeEntities(s) {
+        var str,
+            temp = document.createElement("p");
+        temp.innerHTML = s;
+        str = temp.textContent || temp.innerText;
+        temp = null;
+        return str;
+    }
+    htmlString = decodeEntities(htmlString);
+    editor.setValue(htmlString);
+    editor.setSize("", "650");
+    editor.getViewport(0, 200);
+    CodeMirror.on(editor,"change",function () {
+        var cur = editor.getValue();
+        if(cur === htmlString)
+        {
+            document.getElementById("run").disabled = true;
+        }
+        else
+        {
+            document.getElementById("run").disabled = false;
+        }
+    })
+</script>
 {% endblock content %}

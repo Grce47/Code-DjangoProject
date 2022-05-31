@@ -77,7 +77,7 @@ TEMPLATES = [
 ]
 
 STATICFILES_DIRS = [
-    'static/',
+    BASE_DIR.joinpath('static'),
 ]
 
 WSGI_APPLICATION = 'ml_django_project.wsgi.application'

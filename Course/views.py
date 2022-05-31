@@ -15,8 +15,6 @@ def home(request, index=1):
         'form2' : False,
     }
     if request.method == "POST":
-        
-        print(request.POST)
         if(request.POST.get('codearea',None) != None):
             codeareadata = request.POST['codearea']
 
